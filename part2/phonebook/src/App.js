@@ -3,6 +3,7 @@ import personService from './services/persons'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
+import Notification from './components/Notification'
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -10,6 +11,7 @@ const App = () => {
   const [newNum, setNewNum] = useState('')
   const [showAll, setShowAll] = useState(true)
   const [search, setSearch] = useState('')
+  const [notification, setNotification] = useState(null)
 
   useEffect(() => {
     personService
@@ -53,10 +55,14 @@ const App = () => {
           .update(id, newPersonObject)
           .then(returnedPerson => {
             setPersons(persons.map(person => person.id !== id ? person : returnedPerson))
+
             setNewName('')
             document.getElementById('name').value = ''
+
             setNewNum('')
             document.getElementById('number').value = ''
+
+            showNotification(`Updated ${newPersonObject.name}`)
           })
       }
     }
@@ -65,10 +71,14 @@ const App = () => {
         .create(newPersonObject)
         .then(newPerson => {
           setPersons(persons.concat(newPerson))
+
           setNewName('')
           document.getElementById('name').value = ''
+
           setNewNum('')
           document.getElementById('number').value = ''
+
+          showNotification(`Added ${newPersonObject.name}`)
         })
     }
   }
@@ -79,12 +89,18 @@ const App = () => {
         .deleteEntry(id)
         .then(response => {
           setPersons(persons.filter(p => p.id !== id))
+          showNotification(`Deleted ${name}`)
         })
         .catch(error => {
           alert(`the person with id ${id} was already deleted from the server`)
           setPersons(persons.filter(p => p.id !== id))
         })
     }
+  }
+
+  const showNotification = message => {
+    setNotification(message)
+    setTimeout(() => setNotification(null), 5000)
   }
 
   const personsToShow = showAll
@@ -94,6 +110,8 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+
+      <Notification message={notification} />
 
       <Filter handleChange={handleSearchChange} />
 
