@@ -12,6 +12,7 @@ const App = () => {
   const [showAll, setShowAll] = useState(true)
   const [search, setSearch] = useState('')
   const [notification, setNotification] = useState(null)
+  const [type, setType] = useState('')
 
   useEffect(() => {
     personService
@@ -62,7 +63,11 @@ const App = () => {
             setNewNum('')
             document.getElementById('number').value = ''
 
-            showNotification(`Updated ${newPersonObject.name}`)
+            showNotification(`Updated ${newPersonObject.name}`, 'success')
+          })
+          .catch(error => {
+            showNotification(`Information of ${newPersonObject.name} has already been removed from the server`, 'error')
+            setPersons(persons.filter(p => p.id !== id))
           })
       }
     }
@@ -78,7 +83,7 @@ const App = () => {
           setNewNum('')
           document.getElementById('number').value = ''
 
-          showNotification(`Added ${newPersonObject.name}`)
+          showNotification(`Added ${newPersonObject.name}`, 'success')
         })
     }
   }
@@ -89,16 +94,17 @@ const App = () => {
         .deleteEntry(id)
         .then(response => {
           setPersons(persons.filter(p => p.id !== id))
-          showNotification(`Deleted ${name}`)
+          showNotification(`Deleted ${name}`, 'success')
         })
         .catch(error => {
-          alert(`the person with id ${id} was already deleted from the server`)
+          showNotification(`Information of ${name} has already been removed from the server`, 'error')
           setPersons(persons.filter(p => p.id !== id))
         })
     }
   }
 
-  const showNotification = message => {
+  const showNotification = (message, type) => {
+    setType(type)
     setNotification(message)
     setTimeout(() => setNotification(null), 5000)
   }
@@ -111,7 +117,7 @@ const App = () => {
     <div>
       <h2>Phonebook</h2>
 
-      <Notification message={notification} />
+      <Notification message={notification} type={type} />
 
       <Filter handleChange={handleSearchChange} />
 
