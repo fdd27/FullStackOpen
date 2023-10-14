@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 
+import './App.css'
+
 function App() {
 
   const [allCountries, setAllCountries] = useState(null)
@@ -15,7 +17,7 @@ function App() {
   const handleChange = (event) => {
     if (event.target.value !== '') {
       setFilteredCountries(allCountries.filter(c => {
-        if (c.name.common.includes(event.target.value) || c.name.official.includes(event.target.value)) return c
+        if (c.name.common.toLowerCase().includes(event.target.value.toLowerCase()) || c.name.official.toLowerCase().includes(event.target.value.toLowerCase())) return c
       }))
     }
     else {
@@ -23,17 +25,22 @@ function App() {
     }
   }
 
+  const handleClick = country => {
+    setFilteredCountries([country])
+    document.getElementById('inp').value = `${country.name.common}`
+  }
+
   if (!allCountries || filteredCountries === null) {
     return (
       <>
-        find countries <input onChange={handleChange} />
+        find countries <input id='inp' onChange={handleChange} />
       </>
     )
   }
   if (filteredCountries.length > 10) {
     return (
       <>
-        find countries <input onChange={handleChange} />
+        find countries <input id='inp' onChange={handleChange} />
         <p>Too many matches, specify another filter</p>
       </>
     )
@@ -41,29 +48,33 @@ function App() {
   if (filteredCountries.length > 1) {
     return (
       <>
-        find countries <input onChange={handleChange} />
-        {filteredCountries.map(c => <p key={c.name.official}>{c.name.common}</p>)}
+        find countries <input id='inp' onChange={handleChange} />
+        {filteredCountries.map(c =>
+          <div key={c.name.official} className='country'>
+            {c.name.common}
+            <button onClick={() => handleClick(c)}>show</button>
+          </div>)}
       </>
     )
   }
   if (filteredCountries.length === 1) {
     return (
       <>
-        find countries <input onChange={handleChange} />
+        find countries <input id='inp' onChange={handleChange} />
         <h1>{filteredCountries[0].name.common}</h1>
         <p>{filteredCountries[0].capital}</p>
         <p>{filteredCountries[0].area}</p>
         <strong>languages:</strong>
         <ul>
-          {filteredCountries[0].languages > 1 ? filteredCountries[0].languages.forEach(l => <p>{l.value}</p>) : filteredCountries[0].languages.value}
-        </ul>
+          {Object.entries(filteredCountries[0].languages).map(lang => <li key={lang[0]}>{lang[1]}</li>)}
+        </ul >
         <img src={filteredCountries[0].flags.png} alt="flag" />
       </>
     )
   }
   return (
     <>
-      find countries <input onChange={handleChange} />
+      find countries <input id='inp' onChange={handleChange} />
     </>
   )
 }
