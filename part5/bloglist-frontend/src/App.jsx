@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import Notification from './components/Notification'
+import './index.css'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -11,6 +13,8 @@ const App = () => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
+  const [notification, setNotification] = useState(null)
+  const [notificationType, setNotificationType] = useState(null)
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -38,8 +42,11 @@ const App = () => {
       setPassword('')
     }
     catch (exception) {
-      console.log(user)
-      // alert('Wrong credentials')
+      setNotification('Wrong credentials')
+      setNotificationType('error')
+      setTimeout(() => {
+        setNotification(null)
+      }, 5000)
     }
   }
 
@@ -54,12 +61,21 @@ const App = () => {
       const newBlog = { title, author, url }
       const blog = await blogService.create(newBlog)
       setBlogs(blogs.concat(blog))
+      setNotification(`Added blog ${title} from ${author}`)
+      setNotificationType('success')
+      setTimeout(() => {
+        setNotification(null)
+      }, 5000)
       setTitle('')
       setAuthor('')
       setUrl('')
     }
     catch (exception) {
-      alert('could not create blog')
+      setNotification('Could not create blog')
+      setNotificationType('error')
+      setTimeout(() => {
+        setNotification(null)
+      }, 5000)
     }
   }
 
@@ -79,9 +95,12 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
+      <Notification msg={notification} type={notificationType} />
+
       <p>{user.name} logged in</p>
       <button onClick={handleLogout}>log out</button>
       <br /><br />
+
       <h2>create new blog</h2>
       <form onSubmit={handleCreateBlog}>
         title: <input type="text" onChange={({ target }) => setTitle(target.value)} /> <br /><br />
@@ -89,6 +108,7 @@ const App = () => {
         url: <input type="text" onChange={({ target }) => setUrl(target.value)} /> <br /><br />
         <button type="submit">create</button>
       </form>
+
       <br /><br />
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
