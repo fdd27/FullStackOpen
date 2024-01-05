@@ -36,10 +36,10 @@ const App = () => {
 
   const addPerson = (event) => {
     event.preventDefault()
-    const newPersonObject = { name: newName, number: newNum }
+    const newPersonObject = { name: newName, phone: newNum }
 
     const isFound = persons.some(person => {
-      if (person.name.toLowerCase() === newPersonObject.name.toLocaleLowerCase() && person.number === newPersonObject.number) return true
+      if (person.name.toLowerCase() === newPersonObject.name.toLocaleLowerCase() && person.phone === newPersonObject.phone) return true
       else return false
     })
 
@@ -85,6 +85,7 @@ const App = () => {
 
           showNotification(`Added ${newPersonObject.name}`, 'success')
         })
+        .catch(error => showNotification(error.response.data.error, 'error'))
     }
   }
 
