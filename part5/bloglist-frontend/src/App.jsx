@@ -1,18 +1,19 @@
-import { useState, useEffect } from 'react'
-import Blog from './components/Blog'
+import { useState, useEffect, useRef } from 'react'
+import './index.css'
+
 import blogService from './services/blogs'
 import loginService from './services/login'
+
+import Blog from './components/Blog'
 import Notification from './components/Notification'
-import './index.css'
+import BlogForm from './components/BlogForm'
+import Toggleable from './components/Toggleable'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
   const [notification, setNotification] = useState(null)
   const [notificationType, setNotificationType] = useState(null)
 
@@ -30,6 +31,14 @@ const App = () => {
       blogService.setToken(user.token)
     }
   }, [])
+
+  const blogFormRef = useRef()
+
+  const blogForm = () => (
+    <Toggleable buttonLabel='new blog' ref={blogFormRef}>
+      <BlogForm createBlog={handleCreateBlog} />
+    </Toggleable>
+  )
 
   const handleLogin = async (event) => {
     event.preventDefault()
@@ -55,20 +64,16 @@ const App = () => {
     setUser(null)
   }
 
-  const handleCreateBlog = async event => {
-    event.preventDefault()
+  const handleCreateBlog = async blogObject => {
     try {
-      const newBlog = { title, author, url }
-      const blog = await blogService.create(newBlog)
+      blogFormRef.current.toggleVisibility()
+      const blog = await blogService.create(blogObject)
       setBlogs(blogs.concat(blog))
-      setNotification(`Added blog ${title} from ${author}`)
+      setNotification(`Added blog ${blog.title} from ${blog.author}`)
       setNotificationType('success')
       setTimeout(() => {
         setNotification(null)
       }, 5000)
-      setTitle('')
-      setAuthor('')
-      setUrl('')
     }
     catch (exception) {
       setNotification('Could not create blog')
@@ -85,7 +90,7 @@ const App = () => {
         <h2>log in</h2>
         <form onSubmit={handleLogin}>
           username <input type="text" onChange={({ target }) => setUsername(target.value)} /> <br /><br />
-          password <input type="text" onChange={({ target }) => setPassword(target.value)} /> <br /><br />
+          password <input type="password" onChange={({ target }) => setPassword(target.value)} /> <br /><br />
           <button type="submit">log in</button>
         </form>
       </div>
@@ -101,13 +106,7 @@ const App = () => {
       <button onClick={handleLogout}>log out</button>
       <br /><br />
 
-      <h2>create new blog</h2>
-      <form onSubmit={handleCreateBlog}>
-        title: <input type="text" onChange={({ target }) => setTitle(target.value)} /> <br /><br />
-        author: <input type="text" onChange={({ target }) => setAuthor(target.value)} /> <br /><br />
-        url: <input type="text" onChange={({ target }) => setUrl(target.value)} /> <br /><br />
-        <button type="submit">create</button>
-      </form>
+      {blogForm()}
 
       <br /><br />
       {blogs.map(blog =>
