@@ -86,9 +86,10 @@ const App = () => {
 
   const handleDeleteBlog = async blogObject => {
     try {
+      window.confirm(`Remove blog ${blogObject.title} by ${blogObject.author}`)
       await blogService.deleteBlog(blogObject.id)
-      // setBlogs(blogs.map(b => b.id !== blogObject.id))
       setBlogs(blogs.filter(b => b.id !== blogObject.id))
+
       setNotification(`Deleted ${blogObject.title} from ${blogObject.author}`)
       setNotificationType('success')
       setTimeout(() => {
