@@ -1,4 +1,5 @@
-import { useState } from "react"
+import { useState } from 'react'
+import PropTypes from 'prop-types'
 
 const Blog = ({ blog, handleLike, handleDeleteBlog }) => {
   const [fullView, setFullView] = useState(false)
@@ -50,6 +51,12 @@ const Blog = ({ blog, handleLike, handleDeleteBlog }) => {
       }
     </div>
   )
+}
+
+Blog.propTypes = {
+  blog: PropTypes.object.isRequired,
+  handleLike: PropTypes.func.isRequired,
+  handleDeleteBlog: PropTypes.func.isRequired
 }
 
 export default Blog
