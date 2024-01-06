@@ -84,6 +84,26 @@ const App = () => {
     }
   }
 
+  const handleDeleteBlog = async blogObject => {
+    try {
+      await blogService.deleteBlog(blogObject.id)
+      // setBlogs(blogs.map(b => b.id !== blogObject.id))
+      setBlogs(blogs.filter(b => b.id !== blogObject.id))
+      setNotification(`Deleted ${blogObject.title} from ${blogObject.author}`)
+      setNotificationType('success')
+      setTimeout(() => {
+        setNotification(null)
+      }, 5000)
+    }
+    catch (exception) {
+      setNotification('Could not delete blog')
+      setNotificationType('error')
+      setTimeout(() => {
+        setNotification(null)
+      }, 5000)
+    }
+  }
+
   const handleLike = async blogObject => {
     try {
       const updatedBlog = await blogService.update(blogObject)
@@ -130,7 +150,7 @@ const App = () => {
 
       <br /><br />
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} handleLike={handleLike} />
+        <Blog key={blog.id} blog={blog} handleLike={handleLike} handleDeleteBlog={handleDeleteBlog} />
       )}
     </div>
   )
