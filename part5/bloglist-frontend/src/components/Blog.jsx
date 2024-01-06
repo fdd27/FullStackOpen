@@ -1,9 +1,20 @@
 import { useState } from "react"
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, handleLike }) => {
   const [fullView, setFullView] = useState(false)
 
   const toggleView = () => setFullView(!fullView)
+
+  const addLike = () => {
+    handleLike({
+      id: blog.id,
+      title: blog.title,
+      author: blog.author,
+      url: blog.url,
+      likes: blog.likes + 1,
+      user: blog.user
+    })
+  }
 
   const blogStyle = {
     paddingTop: 10,
@@ -24,7 +35,7 @@ const Blog = ({ blog }) => {
       {fullView &&
         <div style={blogStyle}>
           {blog.title} {blog.author} <button onClick={toggleView}>hide</button> <br />
-          {blog.url} <br /> likes {blog.likes} <br /> {blog.user && blog.user.name}
+          <a href={blog.url}>{blog.url}</a> <br /> likes {blog.likes} <button onClick={addLike}>like</button> <br /> {blog.user && blog.user.name}
         </div>
       }
     </div>

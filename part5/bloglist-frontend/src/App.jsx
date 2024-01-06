@@ -19,7 +19,7 @@ const App = () => {
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
-      setBlogs(blogs)
+      setBlogs(blogs.sort((blog1, blog2) => blog2.likes - blog1.likes))
     )
   }, [])
 
@@ -84,6 +84,26 @@ const App = () => {
     }
   }
 
+  const handleLike = async blogObject => {
+    try {
+      const updatedBlog = await blogService.update(blogObject)
+      const updatedBlogs = await blogService.getAll()
+      setBlogs(updatedBlogs.sort((blog1, blog2) => blog2.likes - blog1.likes))
+      setNotification(`Added a like to ${updatedBlog.title} from ${updatedBlog.author}`)
+      setNotificationType('success')
+      setTimeout(() => {
+        setNotification(null)
+      }, 5000)
+    }
+    catch (exception) {
+      setNotification('Could not add like')
+      setNotificationType('error')
+      setTimeout(() => {
+        setNotification(null)
+      }, 5000)
+    }
+  }
+
   if (!user) {
     return (
       <div>
@@ -110,7 +130,7 @@ const App = () => {
 
       <br /><br />
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} handleLike={handleLike} />
       )}
     </div>
   )
