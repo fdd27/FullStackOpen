@@ -31,6 +31,16 @@ describe('<Blog />', () => {
     expect(url).not.toHaveStyle('display: none')
     expect(likes).not.toHaveStyle('display: none')
   })
+
+  test('like button works as expected', async () => {
+    const user = userEvent.setup()
+    const button = screen.getByText('like')
+    for (let i = 0; i < 2; i++) {
+      await user.click(button)
+    }
+
+    expect(handleLike.mock.calls).toHaveLength(2)
+  })
 })
 
 
