@@ -31,22 +31,22 @@ const Blog = ({ blog, handleLike, handleDeleteBlog }) => {
       <div key={blog.id} style={hideWhenFull} className='short-view'>
         <p className='short-title'>{blog.title}</p>
         <p className='short-author'>{blog.author}</p>
-        <button onClick={toggleView}>view</button>
+        <button id='btnView' onClick={toggleView}>view</button>
       </div>
       <div key={blog.id + 'long'} style={showWhenFull} className='full-view'>
         <p className='full-title'>{blog.title}</p>
         <p className='full-author'>{blog.author}</p>
-        <button onClick={toggleView}>hide</button>
+        <button id='btnHide' onClick={toggleView}>hide</button>
         <br />
         <a href={blog.url} className='url'>{blog.url}</a>
         <br />
         <p className='likes'>likes {blog.likes}</p>
-        <button onClick={addLike}>like</button>
+        <button id='btnLike' onClick={addLike}>like</button>
         <br />
         {blog.user && <p className='username'>{blog.user.name}</p>}
         <br />
         {blog.user.username === user.username &&
-                    <button onClick={deleteBlog}>delete</button>
+          <button id='btnDelete' onClick={deleteBlog}>delete</button>
         }
       </div>
     </div>

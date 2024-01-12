@@ -50,5 +50,17 @@ describe('Blog app', function () {
       cy.contains('testTitle')
       cy.contains('testAuthor')
     })
+
+    describe('When a blog exists', function () {
+      beforeEach(function () {
+        cy.createBlog({ title: 'testTitle', author: 'testAuthor', url: 'testurl.com' })
+      })
+
+      it('Blog can be liked', function () {
+        cy.get('#btnView').click()
+        cy.get('#btnLike').click()
+        cy.get('.success').should('contain', 'Added a like')
+      })
+    })
   })
 })
