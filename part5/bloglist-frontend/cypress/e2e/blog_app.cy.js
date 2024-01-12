@@ -62,11 +62,19 @@ describe('Blog app', function () {
         cy.get('.success').should('contain', 'Added a like')
       })
 
-      it.only('Blog can be deleted', function () {
+      it('Blog can be deleted', function () {
         cy.get('#btnView').click()
         cy.get('#btnDelete').click()
         cy.get('.success').should('contain', 'Deleted testTitle from testAuthor')
         cy.get('.short-view').should('not.exist')
+      })
+
+      it('Delete button is only seen by creator', function () {
+        cy.request('POST', `${Cypress.env('BACKEND')}/users/`, { name: 'tester', username: 'testUsername', password: 'testPassword' })
+        cy.login({ username: 'testUsername', password:'testPassword' })
+
+        cy.get('#btnView').click()
+        cy.get('#btnDelete').should('not.exist')
       })
     })
   })
