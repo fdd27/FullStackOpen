@@ -58,7 +58,7 @@ describe('Blog app', function () {
 
       it('Blog can be liked', function () {
         cy.get('#btnView').click()
-        cy.get('#btnLike').click()
+        cy.get('#btnLike_testTitle').click()
         cy.get('.success').should('contain', 'Added a like')
       })
 
@@ -75,6 +75,21 @@ describe('Blog app', function () {
 
         cy.get('#btnView').click()
         cy.get('#btnDelete').should('not.exist')
+      })
+
+      describe('When multiple blogs exist', function () {
+        beforeEach(function () {
+          cy.createBlog({ title: 'testTitle2', author: 'testAuthor2', url: 'testurl2.com' })
+        })
+
+        it('Blogs are ordered according to likes', function () {
+          cy.get('#testTitle2_short').contains('view').click()
+          cy.get('#btnLike_testTitle2').click()
+          cy.get('#testTitle2_long').contains('hide').click()
+
+          cy.get('.short-view').eq(0).should('contain', 'testTitle2')
+          cy.get('.short-view').eq(1).should('contain', 'testTitle')
+        })
       })
     })
   })
