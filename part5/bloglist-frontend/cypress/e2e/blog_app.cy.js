@@ -10,14 +10,14 @@ describe('Blog app', function () {
     cy.visit('')
   })
 
-  it('login form is shown', function () {
+  it('Login form is shown', function () {
     cy.get('#input-username').should('exist')
     cy.get('#input-password').should('exist')
     cy.get('#submit-button').should('exist')
   })
 
-  describe('login', function () {
-    it('succeeds with correct credentials', function () {
+  describe('Login', function () {
+    it('Succeeds with correct credentials', function () {
       cy.get('#input-username').type('fdd')
       cy.get('#input-password').type('asd')
       cy.get('#submit-button').click()
@@ -25,13 +25,30 @@ describe('Blog app', function () {
       cy.contains('blogs')
     })
 
-    it('fails with wrong credentials', function () {
+    it('Fails with wrong credentials', function () {
       cy.get('#input-username').type('notfdd')
       cy.get('#input-password').type('sad')
       cy.get('#submit-button').click()
 
       cy.get('.error').should('contain', 'Wrong credentials')
       cy.get('.error').should('have.css', 'color', 'rgb(255, 0, 0)')
+    })
+  })
+
+  describe('When logged in', function () {
+    beforeEach(function () {
+      cy.login({ username: 'fdd', password: 'asd' })
+    })
+
+    it('A blog can be created', function () {
+      cy.contains('new blog').click()
+      cy.get('#title').type('testTitle')
+      cy.get('#author').type('testAuthor')
+      cy.get('#url').type('testurl.com')
+      cy.get('#btnCreate').click()
+
+      cy.contains('testTitle')
+      cy.contains('testAuthor')
     })
   })
 })
