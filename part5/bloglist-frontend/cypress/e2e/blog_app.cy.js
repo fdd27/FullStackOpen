@@ -15,4 +15,23 @@ describe('Blog app', function () {
     cy.get('#input-password').should('exist')
     cy.get('#submit-button').should('exist')
   })
+
+  describe('login', function () {
+    it('succeeds with correct credentials', function () {
+      cy.get('#input-username').type('fdd')
+      cy.get('#input-password').type('asd')
+      cy.get('#submit-button').click()
+
+      cy.contains('blogs')
+    })
+
+    it('fails with wrong credentials', function () {
+      cy.get('#input-username').type('notfdd')
+      cy.get('#input-password').type('sad')
+      cy.get('#submit-button').click()
+
+      cy.get('.error').should('contain', 'Wrong credentials')
+      cy.get('.error').should('have.css', 'color', 'rgb(255, 0, 0)')
+    })
+  })
 })

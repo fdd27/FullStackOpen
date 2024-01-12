@@ -129,6 +129,7 @@ const App = () => {
     return (
       <div>
         <h2>log in</h2>
+        <Notification msg={notification} type={notificationType} />
         <form onSubmit={handleLogin}>
           username <input id='input-username' type="text" onChange={({ target }) => setUsername(target.value)} /> <br /><br />
           password <input id='input-password' type="password" onChange={({ target }) => setPassword(target.value)} /> <br /><br />
