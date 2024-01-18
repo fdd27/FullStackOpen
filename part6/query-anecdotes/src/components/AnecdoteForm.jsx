@@ -11,8 +11,15 @@ const AnecdoteForm = () => {
   const newAnecdoteMutation = useMutation({
     mutationFn: createAnecdote,
     onSuccess: (newAnecdote) => {
+      if (newAnecdote.content.length < 5) throw Error
       const anecdotes = queryClient.getQueryData(['anecdotes'])
       queryClient.setQueriesData(['anecdotes'], anecdotes.concat(newAnecdote))
+    },
+    onError: () => {
+      dispatch({ type: 'POST_ERROR' })
+      setTimeout(() => {
+        dispatch({ type: 'REMOVE' })
+      }, 5000)
     }
   })
 
