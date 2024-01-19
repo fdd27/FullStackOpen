@@ -25,7 +25,7 @@ const App = () => {
     }
   ])
 
-  // const [notification, setNotification] = useState('')
+  const [notification, setNotification] = useState('')
 
   const match = useMatch('/anecdotes/:id')
   const anecdote = match
@@ -53,10 +53,12 @@ const App = () => {
     <div>
       <h1>Software anecdotes</h1>
       <Menu />
+      <p>{notification}</p>
+      <br />
       <Routes>
         <Route path='/' element={<AnecdoteList anecdotes={anecdotes} />} />
         <Route path='/about' element={<About />} />
-        <Route path='/create' element={<CreateNew addNew={addNew} />} />
+        <Route path='/create' element={<CreateNew addNew={addNew} setNotification={setNotification} />} />
         <Route path='/anecdotes/:id' element={<Anecdote anecdote={anecdote} />} />
       </Routes>
       <Footer />
