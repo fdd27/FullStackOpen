@@ -1,0 +1,10 @@
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImZkZDIiLCJpZCI6IjY1OGFhMjcyOGQ2ZWM4YjNjNGIyYWE5MSIsImlhdCI6MTcwMzc3ODY0OH0.MZe82dwwakfk_erBNTsLdZtsSM3DKs41CgKpQWYFQUc
+
+{
+    "title": "DELETE ME RN OR ELSE",
+    "author": "some1",
+    "url": "www.deleteme.pls",
+    "likes": 0
+}
