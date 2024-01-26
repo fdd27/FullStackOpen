@@ -6,26 +6,24 @@ import Blog from "./components/Blog";
 import Notification from "./components/Notification";
 import BlogForm from "./components/BlogForm";
 import Toggleable from "./components/Toggleable";
-import { setNotification, removeNotification } from "./reducers/notificationReducer";
 import { useDispatch, useSelector } from "react-redux";
+import { setNotification, removeNotification } from "./reducers/notificationReducer";
+import { setBlogs, appendBlog } from "./reducers/blogReducer";
 
 const App = () => {
-  const [blogs, setBlogs] = useState([]);
+  const dispatch = useDispatch()
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
-  const [notificationType, setNotificationType] = useState(null);
-
-  const dispatch = useDispatch()
-  const notification = useSelector(state => state.notification)
 
   useEffect(() => {
-    blogService
-      .getAll()
-      .then((blogs) =>
-        setBlogs(blogs.sort((blog1, blog2) => blog2.likes - blog1.likes)),
-      );
+    blogService.getAll().then(blogs => dispatch(setBlogs(blogs.sort((b1, b2) => b2.likes - b1.likes))))
   }, []);
+
+  const blogs = useSelector(state => state.blogs)
+  const notification = useSelector(state => state.notification ? state.notification.msg : null)
+  const notificationType = useSelector(state => state.notification ? state.notification.type : null)
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem("loggedBlogUser");
@@ -35,14 +33,6 @@ const App = () => {
       blogService.setToken(user.token);
     }
   }, []);
-
-  const blogFormRef = useRef();
-
-  const blogForm = () => (
-    <Toggleable buttonLabel="new blog" ref={blogFormRef}>
-      <BlogForm createBlog={handleCreateBlog} />
-    </Toggleable>
-  );
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -55,8 +45,7 @@ const App = () => {
       setPassword("");
     }
     catch (exception) {
-      dispatch(setNotification('Wrong credentials'))
-      setNotificationType("error");
+      dispatch(setNotification({ msg: 'Wrong credentials', type: 'error' }))
       setTimeout(() => {
         dispatch(removeNotification())
       }, 5000);
@@ -72,16 +61,15 @@ const App = () => {
     try {
       blogFormRef.current.toggleVisibility();
       const blog = await blogService.create(blogObject);
-      setBlogs(blogs.concat(blog));
-      dispatch(setNotification(`Added blog ${blog.title} from ${blog.author}`))
-      setNotificationType("success");
+      dispatch(appendBlog(blog))
+
+      dispatch(setNotification({ msg: `Added blog ${blog.title} from ${blog.author}`, type: 'success' }))
       setTimeout(() => {
         dispatch(removeNotification())
       }, 5000);
     }
     catch (exception) {
-      dispatch(setNotification('Could not create blog'))
-      setNotificationType("error");
+      dispatch(setNotification({ msg: 'Could not create blog', type: 'error' }))
       setTimeout(() => {
         dispatch(removeNotification())
       }, 5000);
@@ -92,17 +80,15 @@ const App = () => {
     try {
       window.confirm(`Remove blog ${blogObject.title} by ${blogObject.author}`);
       await blogService.deleteBlog(blogObject.id);
-      setBlogs(blogs.filter((b) => b.id !== blogObject.id));
+      dispatch(setBlogs(blogs.filter((b) => b.id !== blogObject.id)));
 
-      dispatch(setNotification(`Deleted ${blogObject.title} from ${blogObject.author}`))
-      setNotificationType("success");
+      dispatch(setNotification({ msg: `Deleted ${blogObject.title} from ${blogObject.author}`, type: 'success' }))
       setTimeout(() => {
         dispatch(removeNotification())
       }, 5000);
     }
     catch (exception) {
-      dispatch(setNotification("Could not delete blog"))
-      setNotificationType("error");
+      dispatch(setNotification({ msg: "Could not delete blog", type: 'error' }))
       setTimeout(() => {
         dispatch(removeNotification())
       }, 5000);
@@ -113,21 +99,27 @@ const App = () => {
     try {
       const updatedBlog = await blogService.update(blogObject);
       const updatedBlogs = await blogService.getAll();
-      setBlogs(updatedBlogs.sort((blog1, blog2) => blog2.likes - blog1.likes));
-      dispatch(setNotification(`Added a like to ${updatedBlog.title} from ${updatedBlog.author}`))
-      setNotificationType("success");
+      dispatch(setBlogs(updatedBlogs.sort((blog1, blog2) => blog2.likes - blog1.likes)));
+      dispatch(setNotification({ msg: `Added a like to ${updatedBlog.title} from ${updatedBlog.author}`, type: 'success' }))
       setTimeout(() => {
         dispatch(removeNotification())
       }, 5000);
     }
-    catch (exception) {
-      dispatch(setNotification('Could not add like'))
-      setNotificationType("error");
+    catch (e) {
+      dispatch(setNotification({ msg: 'Could not add like', type: 'error' }))
       setTimeout(() => {
         dispatch(removeNotification())
       }, 5000);
     }
   };
+
+  const blogFormRef = useRef();
+
+  const blogForm = () => (
+    <Toggleable buttonLabel="new blog" ref={blogFormRef}>
+      <BlogForm createBlog={handleCreateBlog} />
+    </Toggleable>
+  );
 
   if (!user) {
     return (
@@ -173,7 +165,7 @@ const App = () => {
 
       <br />
       <br />
-      {blogs.map((blog) => (
+      {blogs && blogs.map((blog) => (
         <Blog
           key={blog.id}
           blog={blog}
