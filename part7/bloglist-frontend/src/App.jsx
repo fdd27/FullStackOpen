@@ -9,13 +9,14 @@ import Toggleable from "./components/Toggleable";
 import { useDispatch, useSelector } from "react-redux";
 import { setNotification, removeNotification } from "./reducers/notificationReducer";
 import { setBlogs, appendBlog } from "./reducers/blogReducer";
+import { setUser, logOutUser } from "./reducers/userReducer";
 
 const App = () => {
   const dispatch = useDispatch()
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [user, setUser] = useState(null);
+  // const [user, setUser] = useState(null);
 
   useEffect(() => {
     blogService.getAll().then(blogs => dispatch(setBlogs(blogs.sort((b1, b2) => b2.likes - b1.likes))))
@@ -24,12 +25,13 @@ const App = () => {
   const blogs = useSelector(state => state.blogs)
   const notification = useSelector(state => state.notification ? state.notification.msg : null)
   const notificationType = useSelector(state => state.notification ? state.notification.type : null)
+  const user = useSelector(state => state.user)
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem("loggedBlogUser");
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON);
-      setUser(user);
+      dispatch(setUser(user));
       blogService.setToken(user.token);
     }
   }, []);
@@ -40,7 +42,7 @@ const App = () => {
       const user = await loginService.login({ username, password });
       window.localStorage.setItem("loggedBlogUser", JSON.stringify(user));
       blogService.setToken(user.token);
-      setUser(user);
+      dispatch(setUser(user));
       setUsername("");
       setPassword("");
     }
@@ -54,7 +56,7 @@ const App = () => {
 
   const handleLogout = () => {
     window.localStorage.removeItem("loggedBlogUser");
-    setUser(null);
+    dispatch(logOutUser())
   };
 
   const handleCreateBlog = async (blogObject) => {
