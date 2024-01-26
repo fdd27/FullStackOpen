@@ -2,39 +2,43 @@ import { useState, useEffect, useRef } from "react";
 import "./index.css";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
+import userService from './services/users'
+
 import Blog from "./components/Blog";
 import Notification from "./components/Notification";
 import BlogForm from "./components/BlogForm";
 import Toggleable from "./components/Toggleable";
+import Users from "./components/Users";
+
 import { useDispatch, useSelector } from "react-redux";
 import { setNotification, removeNotification } from "./reducers/notificationReducer";
-import { setBlogs, appendBlog } from "./reducers/blogReducer";
-import { setUser, logOutUser } from "./reducers/userReducer";
+import { setBlogs, appendBlogs } from "./reducers/blogReducer";
+import { logIn, logOut } from "./reducers/loginReducer";
+import { setUsers } from "./reducers/userReducer";
 
 const App = () => {
   const dispatch = useDispatch()
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  // const [user, setUser] = useState(null);
 
   useEffect(() => {
     blogService.getAll().then(blogs => dispatch(setBlogs(blogs.sort((b1, b2) => b2.likes - b1.likes))))
   }, []);
 
-  const blogs = useSelector(state => state.blogs)
-  const notification = useSelector(state => state.notification ? state.notification.msg : null)
-  const notificationType = useSelector(state => state.notification ? state.notification.type : null)
-  const user = useSelector(state => state.user)
-
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem("loggedBlogUser");
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON);
-      dispatch(setUser(user));
+      dispatch(logIn(user));
       blogService.setToken(user.token);
     }
   }, []);
+
+  const blogs = useSelector(state => state.blogs)
+  const notification = useSelector(state => state.notification ? state.notification.msg : null)
+  const notificationType = useSelector(state => state.notification ? state.notification.type : null)
+  const user = useSelector(state => state.login)
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -42,7 +46,7 @@ const App = () => {
       const user = await loginService.login({ username, password });
       window.localStorage.setItem("loggedBlogUser", JSON.stringify(user));
       blogService.setToken(user.token);
-      dispatch(setUser(user));
+      dispatch(logIn(user));
       setUsername("");
       setPassword("");
     }
@@ -56,14 +60,16 @@ const App = () => {
 
   const handleLogout = () => {
     window.localStorage.removeItem("loggedBlogUser");
-    dispatch(logOutUser())
+    dispatch(logOut())
   };
 
   const handleCreateBlog = async (blogObject) => {
     try {
       blogFormRef.current.toggleVisibility();
       const blog = await blogService.create(blogObject);
-      dispatch(appendBlog(blog))
+      dispatch(appendBlogs(blog))
+      const users = await userService.getAll()
+      dispatch(setUsers(users))
 
       dispatch(setNotification({ msg: `Added blog ${blog.title} from ${blog.author}`, type: 'success' }))
       setTimeout(() => {
@@ -102,6 +108,7 @@ const App = () => {
       const updatedBlog = await blogService.update(blogObject);
       const updatedBlogs = await blogService.getAll();
       dispatch(setBlogs(updatedBlogs.sort((blog1, blog2) => blog2.likes - blog1.likes)));
+
       dispatch(setNotification({ msg: `Added a like to ${updatedBlog.title} from ${updatedBlog.author}`, type: 'success' }))
       setTimeout(() => {
         dispatch(removeNotification())
@@ -175,6 +182,8 @@ const App = () => {
           handleDeleteBlog={handleDeleteBlog}
         />
       ))}
+
+      <Users />
     </div>
   );
 };
