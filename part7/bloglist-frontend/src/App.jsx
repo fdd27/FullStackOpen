@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from "react";
 import "./index.css";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
-import userService from './services/users'
 
 import Blog from "./components/Blog";
 import Notification from "./components/Notification";
@@ -14,7 +13,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setNotification, removeNotification } from "./reducers/notificationReducer";
 import { setBlogs, appendBlogs } from "./reducers/blogReducer";
 import { logIn, logOut } from "./reducers/loginReducer";
-import { setUsers } from "./reducers/userReducer";
+import { initializeUsers } from "./reducers/userReducer";
 
 const App = () => {
   const dispatch = useDispatch()
@@ -68,8 +67,7 @@ const App = () => {
       blogFormRef.current.toggleVisibility();
       const blog = await blogService.create(blogObject);
       dispatch(appendBlogs(blog))
-      const users = await userService.getAll()
-      dispatch(setUsers(users))
+      dispatch(initializeUsers())
 
       dispatch(setNotification({ msg: `Added blog ${blog.title} from ${blog.author}`, type: 'success' }))
       setTimeout(() => {
@@ -89,6 +87,7 @@ const App = () => {
       window.confirm(`Remove blog ${blogObject.title} by ${blogObject.author}`);
       await blogService.deleteBlog(blogObject.id);
       dispatch(setBlogs(blogs.filter((b) => b.id !== blogObject.id)));
+      dispatch(initializeUsers())
 
       dispatch(setNotification({ msg: `Deleted ${blogObject.title} from ${blogObject.author}`, type: 'success' }))
       setTimeout(() => {
