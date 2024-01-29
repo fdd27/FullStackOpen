@@ -1,22 +1,21 @@
 import { useState, useEffect } from "react";
-import { Routes, Route, useMatch, useNavigate } from 'react-router-dom'
+import { Routes, Route, Link, useMatch, useNavigate } from 'react-router-dom'
+import { useDispatch, useSelector } from "react-redux";
 import "./index.css";
 
 import blogService from "./services/blogs";
 import loginService from "./services/login";
+
+import { setNotification, removeNotification } from "./reducers/notificationReducer";
+import { setBlogs } from "./reducers/blogReducer";
+import { logIn, logOut } from "./reducers/loginReducer";
+import { initializeUsers } from "./reducers/userReducer";
 
 import Home from "./components/Home";
 import Notification from "./components/Notification";
 import Users from "./components/Users";
 import User from "./components/User";
 import BlogPage from "./components/BlogPage";
-
-import { useDispatch, useSelector } from "react-redux";
-import { setNotification, removeNotification } from "./reducers/notificationReducer";
-import { setBlogs } from "./reducers/blogReducer";
-import { logIn, logOut } from "./reducers/loginReducer";
-import { initializeUsers } from "./reducers/userReducer";
-
 
 const App = () => {
   const dispatch = useDispatch()
@@ -109,6 +108,10 @@ const App = () => {
     }
   };
 
+  const navStyle = {
+    marginRight: '10px'
+  }
+
   if (!loggedUser) {
     return (
       <div>
@@ -129,13 +132,15 @@ const App = () => {
 
   return (
     <div>
-      <h2>blogs</h2>
+      <nav style={{ backgroundColor: 'gray' }}>
+        <Link to="/" style={navStyle}>blogs</Link>
+        <Link to="/users" style={navStyle}>users</Link>
+        {loggedUser.name} logged in <button onClick={handleLogout}>log out</button>
+      </nav>
+
+      <h2>blog app</h2>
       <Notification msg={notification} type={notificationType} />
 
-      <p>{loggedUser.name} logged in</p>
-      <button onClick={handleLogout}>log out</button>
-      <br />
-      <br />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/users" element={<Users />} />

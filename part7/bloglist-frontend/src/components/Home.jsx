@@ -36,22 +36,20 @@ const Home = () => {
     };
 
     const blogForm = () => (
-        <Toggleable buttonLabel="new blog" ref={blogFormRef}>
+        <Toggleable buttonLabel="create new" ref={blogFormRef}>
             <BlogForm createBlog={handleCreateBlog} />
         </Toggleable>
     );
 
     const blogStyle = {
         padding: '5px',
-        margin: '5px',
+        marginBottom: '5px',
         border: '1px solid black'
     }
 
     return (
         <div>
             {blogForm()}
-            <br />
-            <br />
             {blogs && blogs.map((blog) => (
                 // <Blog key={blog.id} blog={blog} handleLike={handleLike} handleDeleteBlog={handleDeleteBlog} />
                 <div key={blog.id} style={blogStyle}>
