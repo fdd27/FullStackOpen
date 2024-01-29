@@ -1,4 +1,9 @@
+import { useDispatch } from "react-redux";
+import { addComment } from "../reducers/blogReducer";
+
 const BlogPage = ({ blog, handleLike, handleDelete }) => {
+    const dispatch = useDispatch()
+
     const user = JSON.parse(localStorage.getItem("loggedBlogUser")) || {
         username: "username",
         name: "name",
@@ -19,15 +24,33 @@ const BlogPage = ({ blog, handleLike, handleDelete }) => {
         handleDelete(blog);
     }
 
+    const appendComment = () => {
+        const commentObj = { comment: document.getElementById('txtComment').value }
+        dispatch(addComment(blog.id, commentObj))
+    }
+
     return (
         <div>
-            <h3>{blog.title}</h3>
+            <h2>{blog.title}</h2>
+
             <a href={blog.url}>{blog.url}</a>
             <div>{blog.likes} likes <button onClick={addLike}>like</button> </div>
-            <p>added by {blog.author}</p>
+            <div>added by {blog.author}</div>
             {blog.user.username === user.username && (
                 <button id='btnDelete' onClick={deleteBlog}>delete</button>
             )}
+
+            <h3>comments</h3>
+            <ul>
+                {blog.comments.map(c => (
+                        <li key={c._id}>{c.comment}</li>
+                    )
+                )}
+            </ul>
+            <div>
+                <input type="text" id="txtComment" />
+                <button onClick={appendComment}>add</button>
+            </div>
         </div>
     )
 }

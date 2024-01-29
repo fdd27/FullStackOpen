@@ -40,6 +40,27 @@ blogsRouter.post("/", async (request, response) => {
   response.status(201).json(savedBlog);
 });
 
+blogsRouter.post("/:id/comments", async (request, response) => {
+  if (!request.body.comment) response.status(400).end()
+
+  const blog = await Blog.findById(request.params.id)
+  const newBlog = {
+    title: blog.title,
+    author: blog.author,
+    url: blog.url,
+    likes: blog.likes,
+    user: {
+      id: blog.user.id,
+      username: blog.user.username,
+      name: blog.user.name
+    },
+    comments: blog.comments.concat(request.body)
+  }
+
+  const updatedBlog = await Blog.findByIdAndUpdate(blog.id, newBlog, { new: true })
+  response.json(updatedBlog)
+})
+
 blogsRouter.delete("/:id", async (request, response) => {
   const user = request.user;
   const blog = await Blog.findById(request.params.id);
