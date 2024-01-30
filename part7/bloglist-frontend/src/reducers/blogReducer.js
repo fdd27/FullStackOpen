@@ -23,6 +23,8 @@ export const addComment = (id, commentObj) => {
     return async dispatch => {
         const newObj = await blogService.createComment(id, commentObj)
         dispatch(appendComment(newObj))
+        const blogs = await blogService.getAll()
+        dispatch(setBlogs(blogs))
     }
 }
 

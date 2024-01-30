@@ -29,6 +29,7 @@ const BlogPage = ({ blog, handleLike, handleDelete }) => {
         dispatch(addComment(blog.id, commentObj))
     }
 
+    if (!blog) return null
     return (
         <div>
             <h2>{blog.title}</h2>
