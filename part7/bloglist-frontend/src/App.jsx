@@ -17,6 +17,8 @@ import Users from "./components/Users";
 import User from "./components/User";
 import BlogPage from "./components/BlogPage";
 
+import { Button } from '@mui/material'
+
 const App = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
@@ -108,10 +110,6 @@ const App = () => {
     }
   };
 
-  const navStyle = {
-    marginRight: '10px'
-  }
-
   if (!loggedUser) {
     return (
       <div>
@@ -132,9 +130,13 @@ const App = () => {
 
   return (
     <div>
-      <nav style={{ backgroundColor: 'gray' }}>
-        <Link to="/" style={navStyle}>blogs</Link>
-        <Link to="/users" style={navStyle}>users</Link>
+      <nav style={{  }}>
+        <Button variant="contained" className="mr-3">
+          <Link to="/">blogs</Link>
+        </Button>
+        <Button variant="contained" className=" m-56">
+          <Link to="/users">users</Link>
+        </Button>
         {loggedUser.name} logged in <button onClick={handleLogout}>log out</button>
       </nav>
 
