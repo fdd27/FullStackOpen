@@ -1,5 +1,6 @@
 import { useDispatch } from "react-redux";
 import { addComment } from "../reducers/blogReducer";
+import { List, ListItem, ListItemText, Divider, Button, TextField } from '@mui/material'
 
 const BlogPage = ({ blog, handleLike, handleDelete }) => {
     const dispatch = useDispatch()
@@ -32,25 +33,30 @@ const BlogPage = ({ blog, handleLike, handleDelete }) => {
     if (!blog) return null
     return (
         <div>
-            <h2>{blog.title}</h2>
+            <h2 className="text-xl">Title: {blog.title}</h2>
 
-            <a href={blog.url}>{blog.url}</a>
-            <div>{blog.likes} likes <button onClick={addLike}>like</button> </div>
+            <a href={blog.url}>URL: <span className="hover:text-sky-500 hover:underline underline-offset-2">{blog.url}</span></a>
+            <div>{blog.likes} likes <Button className='max-h-6' variant="contained" onClick={addLike}>like</Button> </div>
             <div>added by {blog.author}</div>
             {blog.user.username === user.username && (
                 <button id='btnDelete' onClick={deleteBlog}>delete</button>
             )}
 
-            <h3>comments</h3>
-            <ul>
+            <h3 className='mt-4 mb-1'>comments:</h3>
+            <List className=" w-full max-w-80 border rounded-lg">
                 {blog.comments.map(c => (
-                        <li key={c._id}>{c.comment}</li>
-                    )
+                    <div key={c._id}>
+                        <ListItem>
+                            <ListItemText>{c.comment}</ListItemText>
+                        </ListItem>
+                        <Divider component="li" />
+                    </div>
+                )
                 )}
-            </ul>
-            <div>
-                <input type="text" id="txtComment" />
-                <button onClick={appendComment}>add</button>
+            </List>
+            <div className='mt-4 flex flex-row gap-x-8'>
+                <TextField id="txtComment" label='Comment' variant="outlined" />
+                <Button variant="contained" onClick={appendComment}>add</Button>
             </div>
         </div>
     )

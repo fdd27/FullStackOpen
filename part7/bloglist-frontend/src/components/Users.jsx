@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux"
 import userService from '../services/users'
 import { setUsers } from "../reducers/userReducer"
 import { Link } from "react-router-dom"
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material'
 
 const Users = () => {
     const dispatch = useDispatch()
@@ -17,23 +18,25 @@ const Users = () => {
 
     return (
         <div>
-            <h2>Users</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th>blogs created</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {users && users.map(user => (
-                        <tr key={user.id}>
-                            <td><Link to={`/users/${user.id}`}>{user.username}</Link></td>
-                            <td>{user.blogs.length}</td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+            <h2 className="text-2xl mb-2">Users</h2>
+            <TableContainer component={Paper}>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell><span className="font-semibold">User</span></TableCell>
+                            <TableCell><span className="font-semibold">blogs created</span></TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {users && users.map(user => (
+                            <TableRow key={user.id}>
+                                <TableCell><Link to={`/users/${user.id}`} className="hover:text-sky-600 hover:underline underline-offset-2">{user.username}</Link></TableCell>
+                                <TableCell>{user.blogs.length}</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
         </div>
     )
 }

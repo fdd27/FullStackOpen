@@ -17,7 +17,8 @@ import Users from "./components/Users";
 import User from "./components/User";
 import BlogPage from "./components/BlogPage";
 
-import { Button } from '@mui/material'
+import { Container, ButtonGroup, Button, ThemeProvider, TextField } from '@mui/material'
+import { createTheme } from "@mui/material/styles";
 
 const App = () => {
   const dispatch = useDispatch()
@@ -110,46 +111,62 @@ const App = () => {
     }
   };
 
+  const theme = createTheme({
+    palette: {
+      primary: {
+        main: '#ffffff',
+      },
+      secondary: {
+        main: '#ffffff',
+      },
+    },
+  })
+
   if (!loggedUser) {
     return (
-      <div>
-        <h2>log in</h2>
-        <Notification msg={notification} type={notificationType} />
-        <form onSubmit={handleLogin}>
-          username{" "}<input id="input-username" type="text" onChange={({ target }) => setUsername(target.value)} />
-          <br />
-          <br />
-          password{" "}<input id="input-password" type="password" onChange={({ target }) => setPassword(target.value)} />
-          <br />
-          <br />
-          <button id="submit-button" type="submit">log in</button>
-        </form>
-      </div>
+      <ThemeProvider theme={theme}>
+        <Container>
+          <h2 className="my-5 text-2xl">Sign in</h2>
+          <Notification msg={notification} type={notificationType} />
+          <form onSubmit={handleLogin} className="flex flex-col max-w-80 gap-4">
+            <TextField id="input-username" label="Username" variant="outlined" onChange={({ target }) => setUsername(target.value)} />
+            <TextField id="input-password" label="Password" variant="outlined" type="password" onChange={({ target }) => setPassword(target.value)} />
+            <Button id="submit-button" variant="contained" type="submit">log in</Button>
+          </form>
+        </Container>
+      </ThemeProvider>
     );
   }
 
   return (
-    <div>
-      <nav style={{  }}>
-        <Button variant="contained" className="mr-3">
-          <Link to="/">blogs</Link>
-        </Button>
-        <Button variant="contained" className=" m-56">
-          <Link to="/users">users</Link>
-        </Button>
-        {loggedUser.name} logged in <button onClick={handleLogout}>log out</button>
-      </nav>
+    <ThemeProvider theme={theme}>
+      <Container>
+        <nav>
+          <ButtonGroup variant="outlined" aria-label="nav button group">
+            <Button>
+              <Link to="/">blogs</Link>
+            </Button>
+            <Button>
+              <Link to="/users">users</Link>
+            </Button>
+            <Button onClick={handleLogout}>log out</Button>
+          </ButtonGroup>
+          <span className="ml-2">
+            <span className="font-semibold">{loggedUser.name}</span> logged in
+          </span>
+        </nav>
 
-      <h2>blog app</h2>
-      <Notification msg={notification} type={notificationType} />
+        <h2 className="text-3xl my-6">blog app</h2>
+        <Notification msg={notification} type={notificationType} />
 
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/users" element={<Users />} />
-        <Route path='/users/:id' element={<User user={user} />} />
-        <Route path="/blogs/:id" element={<BlogPage blog={blog} handleLike={handleLike} handleDelete={handleDeleteBlog} />} />
-      </Routes>
-    </div>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/users" element={<Users />} />
+          <Route path='/users/:id' element={<User user={user} />} />
+          <Route path="/blogs/:id" element={<BlogPage blog={blog} handleLike={handleLike} handleDelete={handleDeleteBlog} />} />
+        </Routes>
+      </Container>
+    </ThemeProvider>
   );
 };
 
