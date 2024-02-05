@@ -163,10 +163,10 @@ const resolvers = {
                 }
                 book.save()
             } catch (error) {
-                throw new GraphQLError('Saving book failed', {
+                throw new GraphQLError('Failed to save book', {
                     extensions: {
                         code: 'BAD_USER_INPUT',
-                        invalidArgs: args.author,
+                        invalidArgs: args.title,
                         error
                     }
                 })
@@ -179,10 +179,10 @@ const resolvers = {
             try {
                 author.save()
             } catch (error) {
-                throw new GraphQLError('Editing author failed', {
+                throw new GraphQLError('Failed to edit author', {
                     extensions: {
                         code: 'BAD_USER_INPUT',
-                        invalidArgs: [args.name, args.setBornTo],
+                        invalidArgs: args.name,
                         error
                     }
                 })
