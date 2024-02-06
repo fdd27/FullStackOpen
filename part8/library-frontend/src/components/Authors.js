@@ -7,7 +7,6 @@ const BornForm = () => {
   const allAuthorsResult = useQuery(ALL_AUTHORS)
   const options = allAuthorsResult.data.allAuthors.map(a => ({ value: a.name, label: a.name }))
 
-  // const [name, setName] = useState('')
   const [selectedOption, setSelectedOption] = useState(null)
   const [born, setBorn] = useState('')
 
@@ -33,9 +32,6 @@ const BornForm = () => {
     <div>
       <h2>Set birthyear</h2>
       <form onSubmit={submit}>
-        {/* <div>
-          name <input type='text' onChange={({ target }) => setName(target.value)} />
-        </div> */}
         <Select
           defaultValue={selectedOption}
           onChange={setSelectedOption}
