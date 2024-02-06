@@ -9,8 +9,29 @@ const NewBook = (props) => {
   const [genre, setGenre] = useState('')
   const [genres, setGenres] = useState([])
 
-  const [ createBook ] = useMutation(CREATE_BOOK, {
-    refetchQueries: [ { query: ALL_BOOKS }, { query: ALL_AUTHORS } ]
+  const [createBook] = useMutation(CREATE_BOOK, {
+    update: (cache, response) => {
+      cache.updateQuery({ query: ALL_BOOKS }, ({ allBooks }) => {
+        return {
+          allBooks: allBooks.concat(response.data.addBook)
+        }
+      })
+      cache.updateQuery({ query: ALL_AUTHORS }, ({ allAuthors }) => {
+        // const authorId = response.data.allBooks.author.id
+        // const updatedAuthors = allAuthors.map(author => {
+        //   if (author.id === authorId) {
+        //     return {
+        //       ...author,
+        //       bookCount: author.bookCount //+ 1
+        //     }
+        //   }
+        //   return author
+        // })
+        return {
+          allAuthors: allAuthors.concat(response.data.addBook.author)
+        }
+      })
+    }
   })
 
   if (!props.show) {
@@ -27,6 +48,7 @@ const NewBook = (props) => {
     setAuthor('')
     setGenres([])
     setGenre('')
+    props.setPage('books')
   }
 
   const addGenre = () => {
@@ -56,7 +78,7 @@ const NewBook = (props) => {
           <input
             type="number"
             value={published}
-            onChange={({ target }) => setPublished(target.value)}
+            onChange={({ target }) => setPublished(Number(target.value))}
           />
         </div>
         <div>
