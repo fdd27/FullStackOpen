@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
-import { useApolloClient } from '@apollo/client'
+import { useApolloClient, useSubscription } from '@apollo/client'
+
 import Authors from './components/Authors'
 import Books from './components/Books'
 import NewBook from './components/NewBook'
 import Login from './components/Login'
 import Recommended from './components/Recommended'
+import { ALL_BOOKS, BOOK_ADDED } from './query'
 
 const App = () => {
   const [page, setPage] = useState('authors')
@@ -16,6 +18,14 @@ const App = () => {
     const localStorageToken = localStorage.getItem('library-user-token') 
     if (localStorageToken) setToken(localStorageToken)
   }, [])
+
+  useSubscription(BOOK_ADDED, {
+    onData: ({ data, client }) => {
+      const addedBook = data.data.bookAdded
+      updateCache(client.cache, { query: ALL_BOOKS }, addedBook)
+      window.alert(`Added book: ${addedBook.title}`)
+    }
+  })
 
   const logout = () => {
     setToken(null)
@@ -47,6 +57,22 @@ const App = () => {
       <Recommended show={page === 'recommended'} />
     </div>
   )
+}
+
+export const updateCache = (cache, query, addedBook) => {
+  const uniqByTitle = (a) => {
+    let seen = new Set()
+    return a.filter(item => {
+      let k = item.title
+      return seen.has(k) ? false : seen.add(k)
+    })
+  }
+
+  cache.updateQuery(query, ({ allBooks }) => {
+    return {
+      allBooks: uniqByTitle(allBooks.concat(addedBook))
+    }
+  })
 }
 
 export default App

@@ -41,7 +41,7 @@ const Books = (props) => {
       <div style={{ display: 'flex' }}>
         {books.map(book => {
           return (
-            <div key={book.id}>
+            <div key={book.title}>
               {book.genres.map(genre => (
                 <button onClick={({ target }) => setFilter(target.textContent)} key={genre}>{genre}</button>
               ))}
