@@ -14,8 +14,12 @@ const Books = (props) => {
   if (allBooksResult.loading) return <div>loading...</div>
   if (filteredBooksResult.loading) return <div>loading...</div>
 
-  const books = allBooksResult.data.allBooks
   const booksToShow = filteredBooksResult.data.allBooks
+  const books = allBooksResult.data.allBooks
+  const allGenres = books.reduce((acc, book) => {
+    return [...acc, ...book.genres]
+  }, [])
+  const uniqueGenres = Array.from(new Set(allGenres))
 
   return (
     <div>
@@ -39,15 +43,9 @@ const Books = (props) => {
       </table>
 
       <div style={{ display: 'flex' }}>
-        {books.map(book => {
-          return (
-            <div key={book.title}>
-              {book.genres.map(genre => (
-                <button onClick={({ target }) => setFilter(target.textContent)} key={genre}>{genre}</button>
-              ))}
-            </div>
-          )
-        })}
+        {uniqueGenres.map(g => (
+          <button onClick={() => setFilter(g)} key={g}>{g}</button>
+        ))}
         <button onClick={() => setFilter('')}>all genres</button>
       </div>
     </div>
