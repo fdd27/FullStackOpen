@@ -8,22 +8,46 @@ const pubsub = new PubSub()
 
 const resolvers = {
     Author: {
-        bookCount: (root) => null //books.filter(b => b.author === root.name).length
+        bookCount: async (root) => {
+            return root.books.length
+        },
+        books: async (parent) => {
+            return await Book.find({ author: parent._id })
+        }
     },
+    Book: {
+        author: async (parent) => {
+            try {
+                return await Author.findById(parent.author)
+            } catch (error) {
+                console.error("Error fetching author:", error);
+                throw new Error("Failed to fetch author for the book");
+            }
+        }
+    },    
     Query: {
         bookCount: async () => Book.collection.countDocuments(),
         authorCount: async () => Author.collection.countDocuments(),
         allBooks: async (root, args) => {
-            if (args.author && !args.genre) return null //books.filter(b => b.author === args.author)
+            if (args.author && !args.genre) return null // Book.find({ author: args.author }).populate('author')
             else if (!args.author && args.genre) return Book.find({ genres: args.genre }).populate('author')
-            else if (args.author && args.genre) return null //books.filter(b => b.author === args.author && b.genres.includes(args.genre))
+            else if (args.author && args.genre) return null // Book.find({ author: args.author, genre: args.genre }).populate('author')
             else return Book.find({}).populate('author')
         },
-        allAuthors: async () => Author.find({}),
+        allAuthors: async () => Author.find({}).populate('books'),
         me: (root, args, context) => context.currentUser
     },
     Mutation: {
         addBook: async (root, args, context) => {
+            let author = await Author.findOne({ name: args.author })
+
+            if (!author) {
+                author = new Author({ name: args.author })
+                await author.save()
+            }
+
+            const book = new Book({ ...args, author: author._id })
+
             if (!context.currentUser) {
                 throw new GraphQLError('Not authenticated', {
                     extensions: {
@@ -32,29 +56,24 @@ const resolvers = {
                 })
             }
 
-            const book = new Book({ ...args })
             try {
-                const authorExists = await Author.findOne({ name: args.author })
-                if (!authorExists) {
-                    const author = new Author({ name: args.author })
-                    await author.save()
-                    book.author = author
-                } else {
-                    book.author = authorExists
-                }
-                book.save()
-            } catch (error) {
+                await book.save()
+
+                author.books.push(book)
+                await author.save()
+
+                pubsub.publish('BOOK_ADDED', { bookAdded: book })
+                return book
+            }
+            catch (error) {
                 throw new GraphQLError('Failed to save book', {
                     extensions: {
                         code: 'BAD_USER_INPUT',
-                        invalidArgs: args.title,
+                        invalidArgs: args,
                         error
                     }
                 })
             }
-
-            pubsub.publish('BOOK_ADDED', { bookAdded: book })
-            return book
         },
         editAuthor: async (root, args, context) => {
             if (!context.currentUser) {

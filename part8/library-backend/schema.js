@@ -4,6 +4,7 @@ const typeDefs = `
     id: ID!
     born: Int
     bookCount: Int
+    books: [Book!]!
   }
 
   type Book {
@@ -38,7 +39,7 @@ const typeDefs = `
         author: String!
         published: Int!
         genres: [String!]!
-    ): Book
+    ): Book!
 
     editAuthor(
         name: String!
