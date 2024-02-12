@@ -16,8 +16,8 @@ interface Result {
 const parseArgs = (args: string[]): Inputs => {
     args.splice(0, 2);
 
-    const last: string = args.pop();
-    let day: number = null;
+    const last: string | undefined = args.pop();
+    let day: number | null = null;
     if (!isNaN(Number(last))) day = Number(last)
     else throw new Error('Last value is not a number.')
 
