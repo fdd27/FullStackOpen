@@ -1,3 +1,8 @@
+interface Inputs {
+    dailyExerciseHours: number[],
+    day: number
+}
+
 interface Result {
     periodLength: number,
     trainingDays: number,
@@ -6,6 +11,25 @@ interface Result {
     ratingDescription: string,
     target: number,
     average: number
+}
+
+const parseArgs = (args: string[]): Inputs => {
+    args.splice(0, 2);
+
+    const last: string = args.pop();
+    let day: number = null;
+    if (!isNaN(Number(last))) day = Number(last)
+    else throw new Error('Last value is not a number.')
+
+    const dailyExerciseHours: number[] = args.map(x => {
+        if (!isNaN(Number(x))) return Number(x);
+        else throw new Error('Not all values are numbers.');
+    })
+
+    return {
+        dailyExerciseHours: dailyExerciseHours,
+        day: day
+    }  
 }
 
 const calculateExercises = (dailyExerciseHours: number[], day: number): Result => {
@@ -33,7 +57,6 @@ const calculateExercises = (dailyExerciseHours: number[], day: number): Result =
             ratingDescription = 'Not bad';
             success = true;
             break;
-        default: ratingDescription = ''
     }
 
     return {
@@ -47,4 +70,14 @@ const calculateExercises = (dailyExerciseHours: number[], day: number): Result =
     }
 }
 
-console.log(calculateExercises([3, 0, 2, 4.5, 0, 3, 1], 2));
+try {
+    const { dailyExerciseHours, day } = parseArgs(process.argv);
+    console.log(calculateExercises(dailyExerciseHours, day));
+    
+}
+catch (error: unknown) {
+    let errorMessage = 'Something went wrong.';
+    if (error instanceof Error) errorMessage += `\nError: ` + error.message;
+    console.log(errorMessage);
+    
+}
