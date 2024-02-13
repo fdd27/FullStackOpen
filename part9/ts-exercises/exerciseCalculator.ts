@@ -18,21 +18,21 @@ const parseArgs = (args: string[]): Inputs => {
 
     const last: string | undefined = args.pop();
     let day: number | null = null;
-    if (!isNaN(Number(last))) day = Number(last)
-    else throw new Error('Last value is not a number.')
+    if (!isNaN(Number(last))) day = Number(last);
+    else throw new Error('Last value is not a number.');
 
     const dailyExerciseHours: number[] = args.map(x => {
         if (!isNaN(Number(x))) return Number(x);
         else throw new Error('Not all values are numbers.');
-    })
+    });
 
     return {
         dailyExerciseHours: dailyExerciseHours,
         day: day
-    }  
-}
+    };
+};
 
-const calculateExercises = (dailyExerciseHours: number[], day: number): Result => {
+export const calculateExercises = (dailyExerciseHours: number[], day: number): Result => {
     const trainingDays: number = dailyExerciseHours.filter(h => h !== 0).length;
 
     let average: number = 0;
@@ -67,8 +67,8 @@ const calculateExercises = (dailyExerciseHours: number[], day: number): Result =
         ratingDescription: ratingDescription,
         target: dailyExerciseHours[day],
         average: average
-    }
-}
+    };
+};
 
 try {
     const { dailyExerciseHours, day } = parseArgs(process.argv);
