@@ -15,9 +15,8 @@ const parseValues = (args: string[]): bmiValues => {
     } else throw new Error('Provided values were not numbers!');
 }
 
-const calculateBmi = (h: number, m: number): string => {
+export const calculateBmi = (h: number, m: number): string => {
     const bmi: number = (m / (h**2))*10000;
-    console.log(bmi.toFixed(3));
     
     if (bmi < 18.5) return 'Underweight';
     else if (bmi >= 18.5 && bmi < 25) return 'Normal weight';
