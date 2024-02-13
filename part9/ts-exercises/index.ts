@@ -4,7 +4,7 @@ import { calculateBmi } from './bmiCalculator';
 
 app.get('/hello', (_req, res) => {
     res.send('Hello Full Stack!');
-})
+});
 
 app.get('/bmi', (req, res) => {
     let h: number;
@@ -22,10 +22,10 @@ app.get('/bmi', (req, res) => {
     else {
         throw new Error('malformatted parameters');
     }
-})
+});
 
 const PORT = 3003;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 
-})
+});
