@@ -1,4 +1,4 @@
-import { NewPatient } from "./types";
+import { NewPatient, Gender } from "./types";
 
 const toNewPatient = (object: unknown): NewPatient => {
     if (!object || typeof object !== 'object') throw new Error('Incorrect or missing data');
@@ -41,8 +41,12 @@ const parseSsn = (ssn: unknown): string => {
     return ssn;
 };
 
-const parseGender = (gender: unknown): string => {
-    if (!isString(gender)) throw new Error('Incorrect or missing gender: ' + gender);
+const isGender = (param: string): param is Gender => {
+    return Object.values(Gender).map(g => g.toString()).includes(param);
+};
+
+const parseGender = (gender: unknown): Gender => {
+    if (!isString(gender) || !isGender(gender)) throw new Error('Incorrect or missing gender: ' + gender);
     return gender;
 };
 
