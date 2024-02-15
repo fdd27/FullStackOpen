@@ -3,12 +3,12 @@ import { NewDiaryEntry, Visibility, Weather } from "./types";
 const toNewDiaryEntry = (object: unknown): NewDiaryEntry => {
     if (!object || typeof object !== 'object') throw new Error('Incorrect or missing data');
 
-    if ('comment' in object && 'date' in object && 'weather' in object && 'visibility' in object) {
+    if ('date' in object && 'weather' in object && 'visibility' in object) {
         const newEntry: NewDiaryEntry = {
             weather: parseWeather(object.weather),
             visibility: parseVisibility(object.visibility),
             date: parseDate(object.date),
-            comment: parseComment(object.comment)
+            // comment: parseComment(object.comment)
         };
 
         return newEntry;
@@ -17,10 +17,10 @@ const toNewDiaryEntry = (object: unknown): NewDiaryEntry => {
     throw new Error('Incorrect data: some fields are missing');
 };
 
-const parseComment = (comment: unknown): string => {
-    if (!isString(comment)) throw new Error('Incorrect or missing comment');
-    return comment;
-};
+// const parseComment = (comment: unknown): string => {
+//     if (!isString(comment)) throw new Error('Incorrect or missing comment');
+//     return comment;
+// };
 
 const isString = (text: unknown): text is string => {
     return typeof text === 'string' || text instanceof String;
