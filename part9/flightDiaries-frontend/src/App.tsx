@@ -45,28 +45,29 @@ const App = () => {
         {notification}
       </div>
       <form onSubmit={addDiary} style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-        <p>Date:</p>
-        <input
-          type="text"
-          placeholder='yyyy-mm-dd'
-          value={date}
-          onChange={({ target }) => setDate(target.value)}
-        />
-        <label htmlFor="weather">Weather:</label>
-        <select name="weather" id="weather" onChange={({ target }) => setWeather(target.value as Weather)}>
-          <option value={Weather.Cloudy}>cloudy</option>
-          <option value={Weather.Rainy}>rainy</option>
-          <option value={Weather.Stormy}>stormy</option>
-          <option value={Weather.Sunny}>sunny</option>
-          <option value={Weather.Windy}>windy</option>
-        </select>
-        <label htmlFor="visibility">Visibility:</label>
-        <select name="visibility" id="visibility" onChange={({ target }) => setVisibility(target.value as Visibility)}>
-          <option value={Visibility.Good}>good</option>
-          <option value={Visibility.Great}>great</option>
-          <option value={Visibility.Ok}>ok</option>
-          <option value={Visibility.Poor}>poor</option>
-        </select>
+        <label htmlFor="date">Date:</label>
+        <input type="date" min='2017-01-01' value={date} onChange={({ target }) => setDate(target.value)} />
+
+        <fieldset>
+          <legend>Weather</legend>
+          {Object.values(Weather).map(w => (
+            <div key={w}>
+              <input type="radio" name='weather' value={w} onChange={({ target }) => setWeather(target.value as Weather)} />
+              <label htmlFor={w}>{w}</label>
+            </div>
+          ))}
+        </fieldset>
+
+        <fieldset>
+          <legend>Visibility</legend>
+          {Object.values(Visibility).map(v => (
+            <div key={v}>
+              <input type="radio" name='visibility' value={v} onChange={({ target }) => setVisibility(target.value as Visibility)} />
+              <label htmlFor={v}>{v}</label>
+            </div>
+          ))}
+        </fieldset>
+
         <button type='submit'>add</button>
       </form>
 
