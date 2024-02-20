@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { getAllDiaries, createDiary } from './services/diaryService';
 import { DiaryEntry, Weather, Visibility } from './types';
+import toNewDiaryEntry, { isDiaryEntry } from './utils';
 import './App.css'
 
 const App = () => {
@@ -8,6 +9,7 @@ const App = () => {
   const [date, setDate] = useState('');
   const [weather, setWeather] = useState<Weather>();
   const [visibility, setVisibility] = useState<Visibility>();
+  const [notification, setNotification] = useState('');
 
   useEffect(() => {
     getAllDiaries().then(data => {
@@ -15,14 +17,23 @@ const App = () => {
     });
   }, []);
 
-  const addDiary = (event: React.SyntheticEvent) => {
+  const addDiary = async (event: React.SyntheticEvent) => {
     event.preventDefault();
-    if (weather && visibility) {
-      createDiary({
-        date: date,
-        weather: weather,
-        visibility: visibility,
-      }).then(data => setDiaries(diaries.concat(data)))
+    if (date && weather && visibility) {
+      try {
+        const newDiaryEntry = toNewDiaryEntry({ date: date, weather: weather, visibility: visibility });
+        const addedDiaryEntry = await createDiary(newDiaryEntry);
+        if (isDiaryEntry(addedDiaryEntry)) setDiaries(diaries.concat(addedDiaryEntry));
+      }
+      catch (error: unknown) {
+        let errorMessage = 'Something went wrong.';
+        if (error instanceof Error) errorMessage += ' Error: ' + error.message;
+
+        setNotification(errorMessage);
+        setTimeout(() => {
+          setNotification('');
+        }, 5000)
+      }
     }
     setDate('');
   }
@@ -30,6 +41,9 @@ const App = () => {
   return (
     <>
       <h1>Diary entries</h1>
+      <div style={{ color: "red", fontStyle: "italic" }}>
+        {notification}
+      </div>
       <form onSubmit={addDiary} style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
         <p>Date:</p>
         <input
@@ -55,7 +69,7 @@ const App = () => {
         </select>
         <button type='submit'>add</button>
       </form>
-      
+
       <div style={{ display: 'flex', flexWrap: 'wrap' }}>
         {diaries.map(diary => (
           <div key={diary.id} style={{ marginRight: '20px' }}>

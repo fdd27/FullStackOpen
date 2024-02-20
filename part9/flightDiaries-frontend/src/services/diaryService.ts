@@ -9,8 +9,23 @@ export const getAllDiaries = () => {
         .then(response => response.data);
 };
 
-export const createDiary = (object: NewDiaryEntry) => {
-    return axios
-        .post<DiaryEntry>(baseUrl, object)
-        .then(response => response.data);
+export const createDiary = async (object: NewDiaryEntry) => {
+    try {
+        const response = await axios.post<DiaryEntry>(baseUrl, object);
+        return response.data;
+    } 
+    catch (error: unknown) {
+        // if (axios.isAxiosError(error)) {
+        //     if (error.response) console.log('Error: ', error.response.data);
+        // }
+
+        // let errorMessage = 'Something went wrong.';
+        // if (axios.isAxiosError(error)) errorMessage += ' Axios error. ' + error.message;
+        // else if (error instanceof Error) errorMessage += ' ' + error.message;
+        // return errorMessage;
+        
+        if (axios.isAxiosError(error)) {
+            if (error.response) return error.response.data;
+        }
+    }
 };
