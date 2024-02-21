@@ -5,7 +5,18 @@ import toNewPatient from '../utils';
 const router = express.Router();
 
 router.get('/', (_req, res) => {
-    res.send(patientService.getNoSsnPatients());
+    res.send(patientService.getNonSensitivePatients());
+});
+
+router.get('/:id', (req, res) => {
+    try {
+        res.send(patientService.getNoSsnPatient(req.params.id));
+    }
+    catch (error: unknown) {
+        let errorMessage = 'Something went wrong.';
+        if (error instanceof Error) errorMessage += ' Error: ' + error.message;
+        res.status(400).send(errorMessage);
+    }
 });
 
 router.post('/', (req, res) => {

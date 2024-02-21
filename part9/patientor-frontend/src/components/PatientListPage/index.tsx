@@ -10,8 +10,8 @@ import HealthRatingBar from "../HealthRatingBar";
 import patientService from "../../services/patients";
 
 interface Props {
-  patients : Patient[]
-  setPatients: React.Dispatch<React.SetStateAction<Patient[]>>
+  patients : Patient[];
+  setPatients: React.Dispatch<React.SetStateAction<Patient[]>>;
 }
 
 const PatientListPage = ({ patients, setPatients } : Props ) => {
