@@ -10,7 +10,7 @@ router.get('/', (_req, res) => {
 
 router.get('/:id', (req, res) => {
     try {
-        res.send(patientService.getNoSsnPatient(req.params.id));
+        res.send(patientService.getPatient(req.params.id));
     }
     catch (error: unknown) {
         let errorMessage = 'Something went wrong.';
