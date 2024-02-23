@@ -15,7 +15,7 @@ const App = () => {
   const [patient, setPatient] = useState<Patient>();
 
   const fetchPatient = async (id: string) => {
-    const response = await patientService.getOne(id);    
+    const response = await patientService.getOne(id); 
     setPatient(response);
   };
 
@@ -46,7 +46,7 @@ const App = () => {
         <Divider hidden />
         <Routes>
           <Route path="/" element={<PatientListPage patients={patients} setPatients={setPatients} />} />
-          <Route path="/patients/:id" element={<PatientPage patient={patient as Patient} />} />
+          <Route path="/patients/:id" element={<PatientPage patient={patient as Patient} setPatient={setPatient} />} />
         </Routes>
       </Container>
     </div>

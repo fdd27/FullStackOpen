@@ -1,6 +1,6 @@
 import HospitalEntry from "./HospitalEntry";
 import OccupationalHealthcareEntry from "./OccupationalHealthcareEntry";
-import HealthCheckEntry from "./HealthcheckEntry";
+import HealthCheckEntry from "./HealthCheckEntry";
 
 import { Entry } from "../../types";
 
