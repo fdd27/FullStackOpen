@@ -54,13 +54,24 @@ interface HospitalEntry extends BaseEntry {
 }
 
 export type NoSsnPatient = Omit<Patient, 'ssn'>;
-
+export type NonSensitivePatient = Omit<Patient, 'ssn' | 'entries'>;
 export type NewPatient = Omit<Patient, 'id'>;
 
-export type NonSensitivePatient = Omit<Patient, 'ssn' | 'entries'>;
+type UnionOmit<T, K extends string | number | symbol> = T extends unknown ? Omit<T, K> : never;
+export type NewEntry = UnionOmit<Entry, 'id'>;
 
 export enum Gender {
     Male = "male",
     Female = "female",
     Other = "other"
+}
+
+export interface SickLeave {
+    startDate: string;
+    endDate: string;
+}
+
+export interface Discharge {
+    date: string;
+    criteria: string;
 }
