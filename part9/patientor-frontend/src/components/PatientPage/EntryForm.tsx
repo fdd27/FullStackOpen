@@ -1,26 +1,58 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 
 import { EntryFormValues, HealthCheckRating } from "../../types";
 
-import { TextField, Button, InputLabel, MenuItem, FormControl, Select } from "@mui/material";
+import { TextField, Button, InputLabel, MenuItem, FormControl, Select, OutlinedInput, Checkbox, ListItemText } from "@mui/material";
+
+import diagnosisService from "../../services/diagnoses";
 
 interface Props {
     onSubmit: (values: EntryFormValues) => Promise<void>;
 }
 
+const formStyle = {
+    border: '1px dotted black',
+    borderRadius: '5px',
+    padding: '0px 10px'
+};
+
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250,
+    },
+  },
+};
+
 const EntryForm = ({ onSubmit }: Props) => {
     const [type, setType] = useState('');
     const [description, setDescription] = useState('');
-    const [date, setDate] = useState('');
+    const [date, setDate] = useState('01-01-2001');
     const [specialist, setSpecialist] = useState('');
-    const [healthCheckRating, setHealthCheckRating] = useState<HealthCheckRating>(0);
-    const [dischargeDate, setDischargeDate] = useState('');
-    const [dischargeCriteria, setDischargeCriteria] = useState('');
-    const [employerName, setEmployerName] = useState('');
-    const [sickLeaveStartDate, setSickLeaveStartDate] = useState('');
-    const [sickLeaveEndDate, setSickLeaveEndDate] = useState('');
     const [diagnosisCodes, setDiagnosisCodes] = useState<string[]>([]);
+    const [allDiagnosisCodes, setAllDiagnosisCodes] = useState<string[]>([]);
+
+    const [healthCheckRating, setHealthCheckRating] = useState<HealthCheckRating>(0);
+
+    const [dischargeDate, setDischargeDate] = useState('01-01-2001');
+    const [dischargeCriteria, setDischargeCriteria] = useState('');
+
+    const [employerName, setEmployerName] = useState('');
+    const [sickLeaveStartDate, setSickLeaveStartDate] = useState('01-01-2001');
+    const [sickLeaveEndDate, setSickLeaveEndDate] = useState('01-01-2001');
+
+    useEffect(() => {
+        const fetchDiagnosisCodes = async () => {
+            const diagnoses = await diagnosisService.getAll();
+            setAllDiagnosisCodes(diagnoses.map(d => d.code));
+        };
+        void fetchDiagnosisCodes();
+    }, []);
+
 
     const addEntry = (event: React.SyntheticEvent) => {
         event.preventDefault();
@@ -80,12 +112,6 @@ const EntryForm = ({ onSubmit }: Props) => {
         setDiagnosisCodes([]);
     };
 
-    const formStyle = {
-        border: '1px dotted black',
-        borderRadius: '5px',
-        padding: '0px 10px'
-    };
-
     return (
         <form onSubmit={addEntry} style={formStyle}>
             <h3>New Entry</h3>
@@ -113,10 +139,11 @@ const EntryForm = ({ onSubmit }: Props) => {
             <TextField
                 label="Date"
                 variant="standard"
+                type="date"
                 value={date}
                 onChange={({ target }) => setDate(target.value)}
                 style={{ width: '100%' }}
-            /><br />
+            />
             <TextField
                 label="Specialist"
                 variant="standard"
@@ -140,6 +167,7 @@ const EntryForm = ({ onSubmit }: Props) => {
                     <TextField
                         label="Discharge date"
                         variant="standard"
+                        type="date"
                         value={dischargeDate}
                         onChange={({ target }) => setDischargeDate(target.value)}
                         style={{ width: '100%' }}
@@ -153,7 +181,7 @@ const EntryForm = ({ onSubmit }: Props) => {
                     /><br />
                 </div>
             }
-            {type === 'OccupationalHealthcare' && 
+            {type === 'OccupationalHealthcare' &&
                 <div>
                     <TextField
                         label="Employer name"
@@ -165,6 +193,7 @@ const EntryForm = ({ onSubmit }: Props) => {
                     <TextField
                         label="Sick leave start date"
                         variant="standard"
+                        type="date"
                         value={sickLeaveStartDate}
                         onChange={({ target }) => setSickLeaveStartDate(target.value)}
                         style={{ width: '100%' }}
@@ -172,19 +201,33 @@ const EntryForm = ({ onSubmit }: Props) => {
                     <TextField
                         label="Sick leave end date"
                         variant="standard"
+                        type="date"
                         value={sickLeaveEndDate}
                         onChange={({ target }) => setSickLeaveEndDate(target.value)}
                         style={{ width: '100%' }}
                     /><br />
                 </div>
             }
-            <TextField
-                label="Diagnosis codes"
-                variant="standard"
-                value={diagnosisCodes}
-                onChange={({ target }) => setDiagnosisCodes(Array.from(target.value.split(',')))}
-                style={{ width: '100%' }}
-            /><br />
+            <FormControl sx={{ m: 1, width: '100%'}}>
+                <InputLabel id="diagnosis-codes-label">Diagnosis codes</InputLabel>
+                <Select
+                    labelId="diagnosis-codes-label"
+                    id="diagnosis-codes"
+                    multiple
+                    value={diagnosisCodes}
+                    // onChange={({ target }) => setDiagnosisCodes(diagnosisCodes.push(String(target.value))}
+                    input={<OutlinedInput label="Diagnosis codes" />}
+                    renderValue={(selected) => selected.join(', ')}
+                    MenuProps={MenuProps}
+                >
+                    {allDiagnosisCodes.map((dc) => (
+                        <MenuItem key={dc} value={dc}>
+                            <Checkbox checked={diagnosisCodes.indexOf(dc) > 1} />
+                            <ListItemText primary={dc} />
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
             <div style={{ width: '100%', paddingBottom: '10px' }}>
                 <Button
                     variant="contained"
