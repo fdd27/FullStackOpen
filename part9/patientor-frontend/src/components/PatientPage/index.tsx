@@ -40,14 +40,12 @@ const PatientPage = ({ patient, setPatient }: Props) => {
                 ...patient,
                 entries: patient.entries.concat(entry)
             };
-            console.log('newPatient: ', newPatient);
             setPatient(newPatient);
         }
         catch (e: unknown) {
             if (axios.isAxiosError(e)) {
                 if (e.response?.data && typeof e.response.data === 'string') {
                     const message = e.response.data.replace('Something went wrong. Error: ', '');
-                    console.error(message);
                     showError(message);
                 }
                 else {
@@ -55,7 +53,6 @@ const PatientPage = ({ patient, setPatient }: Props) => {
                 }
             }
             else {
-                console.error('Unknown error', e);
                 showError('Unknown error');
             }
         }
@@ -73,7 +70,7 @@ const PatientPage = ({ patient, setPatient }: Props) => {
             <p>ssn: {patient.ssn}</p>
             <p>occupation: {patient.occupation}</p>
             {error && <Alert severity="error" style={{ marginBottom: '10px' }}>{error}</Alert>}
-            <EntryForm onSubmit={submitNewEntry} />
+            <EntryForm onSubmit={submitNewEntry} showError={showError} />
             <h3>entries</h3>
             {patient.entries.map(entry =>
                 <div key={entry.id}>
